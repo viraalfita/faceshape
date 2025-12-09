@@ -31,7 +31,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Kamera digunakan untuk memindai wajah dan memberikan rekomendasi gaya rambut.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Aplikasi memerlukan akses galeri untuk menyimpan dan menampilkan foto hasil pemindaian.</string>
+	<string>Aplikasi memerlukan akses galeri untuk memilih foto dan menganalisis wajah Anda.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Aplikasi memerlukan akses untuk menyimpan foto hasil pemindaian ke galeri.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

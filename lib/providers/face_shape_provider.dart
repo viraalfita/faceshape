@@ -27,7 +27,23 @@ class FaceShapeProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _error = 'Wajah tidak terdeteksi';
+      debugPrint('Face analysis failed: $e');
+      
+      // Parse error message untuk memberikan feedback yang lebih baik
+      String errorMessage = e.toString();
+      
+      if (errorMessage.contains('No face detected')) {
+        _error = 'Wajah tidak terdeteksi. Pastikan foto wajah Anda jelas dan menghadap kamera.';
+      } else if (errorMessage.contains('timeout')) {
+        _error = 'Koneksi timeout. Periksa koneksi internet Anda.';
+      } else if (errorMessage.contains('Server error')) {
+        _error = 'Server sedang sibuk. Coba lagi dalam beberapa saat.';
+      } else if (errorMessage.contains('File tidak ditemukan')) {
+        _error = 'File gambar tidak ditemukan.';
+      } else {
+        _error = 'Gagal menganalisis wajah. Silakan coba lagi.';
+      }
+      
       _isLoading = false;
       notifyListeners();
     }

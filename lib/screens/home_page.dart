@@ -1,7 +1,12 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../providers/face_shape_provider.dart';
 import 'guide_page.dart';
@@ -61,19 +66,31 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Future<bool> _ensureGalleryPermission() async {
-    final status = await Permission.photos.request();
-    if (status.isGranted) return true;
+    var status = await Permission.storage.status;
+    
+    if (!status.isGranted) {
+      status = await Permission.storage.request();
+    }
+    
+    if (status.isGranted || status.isLimited) {
+      return true;
+    }
+    
     if (status.isPermanentlyDenied) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Izin galeri ditolak permanen. Buka pengaturan untuk mengaktifkan.'),
+          SnackBar(
+            content: const Text('Izin galeri diperlukan. Buka pengaturan.'),
+            action: SnackBarAction(
+              label: 'Pengaturan',
+              onPressed: () => openAppSettings(),
+            ),
           ),
         );
       }
-      await openAppSettings();
       return false;
     }
+    
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -84,13 +101,52 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return false;
   }
 
+  Future<File?> _compressAndSaveImage(XFile image) async {
+    try {
+      final originalFile = File(image.path);
+      final originalSize = await originalFile.length();
+      
+      final tempDir = await getTemporaryDirectory();
+      final targetPath = p.join(
+        tempDir.path,
+        'compressed_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      
+      final result = await FlutterImageCompress.compressAndGetFile(
+        image.path,
+        targetPath,
+        quality: 85,
+        minWidth: 1024,
+        minHeight: 1024,
+      );
+      
+      if (result == null) {
+        debugPrint('Compression failed');
+        return null;
+      }
+      
+      final compressedFile = File(result.path);
+      final compressedSize = await compressedFile.length();
+      final savedPercent = ((1 - compressedSize / originalSize) * 100).toStringAsFixed(1);
+      debugPrint('Compressed: ${(originalSize / 1024).toStringAsFixed(0)}KB -> ${(compressedSize / 1024).toStringAsFixed(0)}KB ($savedPercent% saved)');
+      
+      return compressedFile;
+    } catch (e) {
+      debugPrint('Compression error: $e');
+      return null;
+    }
+  }
+
   Future<void> _pickImage(ImageSource source) async {
     if (_isPicking || _isAnalyzing) return;
 
     final hasPermission = source == ImageSource.camera
         ? await _ensureCameraPermission()
         : await _ensureGalleryPermission();
-    if (!hasPermission) return;
+    
+    if (!hasPermission) {
+      return;
+    }
 
     setState(() {
       _isPicking = true;
@@ -110,6 +166,20 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       return;
     }
 
+    final compressedFile = await _compressAndSaveImage(image);
+    
+    if (compressedFile == null) {
+      if (mounted) {
+        setState(() {
+          _isPicking = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal memproses gambar')),
+        );
+      }
+      return;
+    }
+
     if (mounted) {
       setState(() {
         _isPicking = false;
@@ -118,7 +188,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     }
 
     final provider = Provider.of<FaceShapeProvider>(context, listen: false);
-    await provider.analyzeFace(image.path);
+    await provider.analyzeFace(compressedFile.path);
 
     if (!mounted) return;
 

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/face_shape_provider.dart';
 
 class ErrorPage extends StatelessWidget {
   const ErrorPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<FaceShapeProvider>(context);
+    final errorMessage = provider.error ?? 'Wajah tidak terdeteksi';
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -27,9 +32,9 @@ class ErrorPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              const Text(
-                'Wajah tidak terdeteksi',
-                style: TextStyle(
+              Text(
+                errorMessage.split('.')[0],
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF2D3142),
@@ -37,13 +42,41 @@ class ErrorPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Coba perbaiki pencahayaan atau posisi\nwajah.',
-                style: TextStyle(
+              Text(
+                errorMessage.contains('.')
+                    ? errorMessage.substring(errorMessage.indexOf('.') + 1).trim()
+                    : 'Pastikan foto wajah Anda jelas dan menghadap kamera dengan pencahayaan yang baik.',
+                style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFF6B7280),
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      '💡 Tips:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3142),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text('• Pastikan wajah menghadap kamera', style: TextStyle(fontSize: 14)),
+                    Text('• Gunakan pencahayaan yang cukup', style: TextStyle(fontSize: 14)),
+                    Text('• Hindari foto yang blur', style: TextStyle(fontSize: 14)),
+                    Text('• Pastikan koneksi internet stabil', style: TextStyle(fontSize: 14)),
+                  ],
+                ),
               ),
               const SizedBox(height: 48),
               SizedBox(
