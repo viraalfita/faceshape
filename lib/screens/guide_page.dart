@@ -6,17 +6,29 @@ class GuidePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final steps = [
-      ('Posisi', 'Pastikan wajah berada di tengah frame, cahaya cukup, dan tidak ada bayangan.'),
-      ('Ambil Foto', 'Tekan “Ambil Foto” atau pilih “Upload dari Galeri” jika sudah memiliki foto.'),
-      ('Analisis', 'Tunggu proses analisis selesai. Jangan menutup aplikasi selama proses berlangsung.'),
-      ('Hasil', 'Lihat bentuk wajah dan rekomendasi hairstyle yang cocok untukmu.'),
+      (
+        'Posisi',
+        'Pastikan wajah berada di tengah frame, cahaya cukup, dan tidak ada bayangan.',
+      ),
+      (
+        'Ambil Foto',
+        'Tekan “Ambil Foto” atau pilih “Upload dari Galeri” jika sudah memiliki foto.',
+      ),
+      (
+        'Analisis',
+        'Tunggu proses analisis selesai. Jangan menutup aplikasi selama proses berlangsung.',
+      ),
+      ('Hasil', 'Lihat bentuk wajah dan rekomendasi hairstyle kmu.'),
     ];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Cara Penggunaan',
-          style: TextStyle(color: Color(0xFF2D3142), fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color(0xFF2D3142),
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
@@ -39,7 +51,10 @@ class GuidePage extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Tip: gunakan kamera depan, cahaya alami, dan hindari filter agar hasil lebih akurat.',
-                    style: TextStyle(color: Color(0xFF4B5563), fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Color(0xFF4B5563),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -80,7 +95,10 @@ class GuidePage extends StatelessWidget {
                       child: Center(
                         child: Text(
                           '$index',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

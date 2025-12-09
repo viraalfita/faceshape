@@ -13,9 +13,10 @@ class FaceShapeResult {
     return FaceShapeResult(
       shape: json['shape'] ?? '',
       description: json['description'] ?? '',
-      recommendations: (json['recommendations'] as List?)
-          ?.map((e) => HairstyleRecommendation.fromJson(e))
-          .toList() ??
+      recommendations:
+          (json['recommendations'] as List?)
+              ?.map((e) => HairstyleRecommendation.fromJson(e))
+              .toList() ??
           [],
     );
   }
@@ -25,11 +26,13 @@ class HairstyleRecommendation {
   final String name;
   final String description;
   final String imageUrl;
+  final String gender;
 
   HairstyleRecommendation({
     required this.name,
     required this.description,
     required this.imageUrl,
+    required this.gender,
   });
 
   factory HairstyleRecommendation.fromJson(Map<String, dynamic> json) {
@@ -37,7 +40,7 @@ class HairstyleRecommendation {
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
+      gender: json['gender'] ?? '',
     );
   }
 }
-
