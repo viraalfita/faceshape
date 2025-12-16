@@ -9,8 +9,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../providers/face_shape_provider.dart';
+import '../providers/history_provider.dart';
 import 'guide_page.dart';
 import 'error_page.dart';
+import 'history_page.dart';
 import 'result_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -188,6 +190,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     }
 
     final provider = Provider.of<FaceShapeProvider>(context, listen: false);
+    final historyProvider =
+        Provider.of<HistoryProvider>(context, listen: false);
     await provider.analyzeFace(compressedFile.path);
 
     if (!mounted) return;
@@ -202,6 +206,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         MaterialPageRoute(builder: (_) => const ErrorPage()),
       );
     } else {
+      if (provider.imagePath != null && provider.result != null) {
+        await historyProvider.addHistory(
+          imagePath: provider.imagePath!,
+          shape: provider.result!.shape,
+        );
+      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ResultPage()),
@@ -212,6 +222,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history, color: Color(0xFFB24AE5)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HistoryPage()),
+              );
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(

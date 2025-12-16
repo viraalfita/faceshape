@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/face_shape_provider.dart';
+import 'providers/history_provider.dart';
 import 'screens/splash_screen.dart';
 
 // main.dart
@@ -10,6 +11,9 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => FaceShapeProvider()),
+        ChangeNotifierProvider(
+          create: (_) => HistoryProvider()..loadHistory(),
+        ),
       ],
       child: const MyApp(),
     ),

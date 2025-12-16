@@ -1,12 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../providers/face_shape_provider.dart';
+import '../models/face_shape_result.dart';
 
 class DetailPage extends StatelessWidget {
-  const DetailPage({Key? key}) : super(key: key);
+  const DetailPage({
+    required this.result,
+    this.imagePath,
+    this.createdAt,
+    Key? key,
+  }) : super(key: key);
+
+  final FaceShapeResult result;
+  final String? imagePath;
+  final DateTime? createdAt;
 
   List<String> _stylingDo(String shape) {
     final key = shape.toUpperCase();
@@ -88,13 +95,6 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<FaceShapeProvider>(context);
-    final result = provider.result;
-
-    if (result == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -114,17 +114,34 @@ class DetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (provider.imagePath != null)
+            if (imagePath != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.file(
-                  File(provider.imagePath!),
+                  File(imagePath!),
                   height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
             const SizedBox(height: 16),
+            if (createdAt != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    const Icon(Icons.access_time, size: 16),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${createdAt!.year}-${createdAt!.month.toString().padLeft(2, '0')}-${createdAt!.day.toString().padLeft(2, '0')} ${createdAt!.hour.toString().padLeft(2, '0')}:${createdAt!.minute.toString().padLeft(2, '0')}',
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             Text(
               result.shape,
               style: const TextStyle(

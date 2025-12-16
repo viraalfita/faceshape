@@ -199,7 +199,12 @@ class ResultPage extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const DetailPage()),
+                            MaterialPageRoute(
+                              builder: (_) => DetailPage(
+                                result: result,
+                                imagePath: provider.imagePath,
+                              ),
+                            ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
